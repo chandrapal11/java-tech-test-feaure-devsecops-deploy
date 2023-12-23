@@ -1,0 +1,64 @@
+name: Build jar and docker Image
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-docker-image-java-tech:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+         fetch-depth: 0
+         
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: Build with Maven
+        run: |
+         mvn clean package -Dmaven.test.skip=true
+         ls -la target
+           
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-jar
+          path: target/*.jar
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Setup java-tech AWS ECR Details
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
+
+      - name: Login to us-non-prod Amazon ECR
+        id: login-aws-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ steps.login-aws-ecr.outputs.registry }}/java-tech
+          tags: |
+            type=raw,value=1.{{date 'YYYYMMDD'}}.${{ github.run_number }}.${{ github.run_attempt }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+         context: .
+         platforms: linux/amd64
+         push: true
+         tags: ${{ steps.meta.outputs.tags }}
+         labels: ${{ steps.meta.outputs.labels }}
+         provenance: false
