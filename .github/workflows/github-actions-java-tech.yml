@@ -3,6 +3,9 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  BUCKET_NAME: terraform-state-file-11
+
 jobs:
   build-docker-image-java-tech:
     runs-on: ubuntu-latest
