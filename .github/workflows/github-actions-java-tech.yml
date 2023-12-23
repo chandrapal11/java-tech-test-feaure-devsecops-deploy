@@ -59,6 +59,29 @@ jobs:
          context: .
          platforms: linux/amd64
          push: true
-         tags: ${{ steps.meta.outputs.tags }}
-         labels: ${{ steps.meta.outputs.labels }}
+         #tags: ${{ steps.meta.outputs.tags }}
+         #labels: ${{ steps.meta.outputs.labels }}
          provenance: false
+
+  terraform-module-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ec2 code
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
+      
+      - name: setup environment for terraform execution
+        uses: hashicorp/setup-terraform@v3
+        with: 
+          terraform_version: "1.1.7"
+      
+      - name: terraform plan and apply for ec2 and docker
+        run: |
+            cd terraform
+            terraform init -backend-config=bucket=${{ env.BUCKET_NAME }}
+            terraform plan 
+            terraform apply --auto-approve
+
