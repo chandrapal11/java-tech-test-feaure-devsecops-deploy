@@ -54,7 +54,7 @@ jobs:
           images: |
             ${{ steps.login-aws-ecr.outputs.registry }}/java-tech
           tags: |
-            type=raw,value=1.{{date 'YYYYMMDD'}}.${{ github.run_number }}.${{ github.run_attempt }}
+            latest
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -62,8 +62,8 @@ jobs:
          context: .
          platforms: linux/amd64
          push: true
-         #tags: ${{ steps.meta.outputs.tags }}
-         #labels: ${{ steps.meta.outputs.labels }}
+         tags: ${{ steps.meta.outputs.tags }}
+         labels: ${{ steps.meta.outputs.labels }}
          provenance: false
 
   terraform-module-execution:
