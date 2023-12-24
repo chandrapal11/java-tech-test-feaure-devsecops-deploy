@@ -84,8 +84,6 @@ jobs:
       
       - name: terraform plan and apply for ec2 and docker
         run: |
-            cd ./terraform
-            echo pwd
             terraform init  -chdir=./terraform -backend-config=bucket=${{ env.BUCKET_NAME }}
             terraform plan ./terraform/
             terraform apply --auto-approve ./terraform/
