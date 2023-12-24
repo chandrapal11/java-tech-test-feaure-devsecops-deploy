@@ -54,4 +54,3 @@ mvn clean test
 - Deploy the application using container or as a lambda securely in AWS using IaC
 - Implement CDN caching for the application
 - You have two days to come up with the solution, share the URL to the app and the github code
-- Reach out to disha.2.gupta@bt.com to arrange the review 
