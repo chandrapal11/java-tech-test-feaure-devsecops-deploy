@@ -1,13 +1,13 @@
 # Create an EC2 instance
-resource "aws_instance" "example" {
-  ami           = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI, replace with your preferred AMI
+resource "aws_instance" "java_tech" {
+  ami           = "ami-0a0f1259dd1c90938" # Amazon Linux 2 AMI, replace with your preferred AMI
   instance_type = "t2.micro"
   key_name      = "test"     # Replace with your EC2 key pair name
 
   security_groups = [aws_security_group.instance_sg.name]
 
   tags = {
-    Name = "example-instance"
+    Name = "java-tech"
   }
 
   user_data = <<-EOF
